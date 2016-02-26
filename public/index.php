@@ -35,7 +35,7 @@ $app->get('/getList', function (ServerRequestInterface $request, ResponseInterfa
         $items[] = $item;
     }
     //print_r($items);
-    $response->getBody()->write(json_encode($items, JSON_UNESCAPED_SLASHES) );
+    $response->getBody()->write(json_encode($items, JSON_UNESCAPED_SLASHES + JSON_UNESCAPED_UNICODE) );
     return $response;
 //    echo  json_encode($items);
 });
