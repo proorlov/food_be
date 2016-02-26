@@ -1,5 +1,5 @@
 <?php
-header('Access-Control-Allow-Origin', '*');
+header('Access-Control-Allow-Origin: *');
 require '../vendor/autoload.php';
 require 'connect.php';
 
@@ -40,5 +40,8 @@ $app->get('/getList', function (ServerRequestInterface $request, ResponseInterfa
     return $response;
 //    echo  json_encode($items);
 });
-//$app->post('/postPhoto/[]')
+$app->put('/addPost', function (ServerRequestInterface $request, ResponseInterface $response){
+    $uploadedFiles = $request->getUploadedFiles();
+
+});
 $app->run();
