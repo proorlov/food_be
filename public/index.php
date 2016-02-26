@@ -28,9 +28,10 @@ $app->get('/getList', function (ServerRequestInterface $request, ResponseInterfa
         $item  = [];
         $item['id'] = $row->id;
         $item['description'] = $row->description;
-        $baseUrl = "/img/" . $row->placeId . "/" . $row->id;
-        $item['expectationUrl'] = $baseUrl . "/exp.jpg";
-        $item['realityUrl'] = $baseUrl . "/real.jpg";
+        $item['expectationUrl'] = "/img/items/" . $row->placeId . "/" . $row->id . "/exp.jpg";
+        $item['realityUrl'] = "/img/items/" . $row->placeId . "/" . $row->id . "/real.jpg";
+        $item['userId'] = $row->userId;
+        $item['userPhoto'] = "/img/users/" . $row->userId . "/photo.jpg";
         $items[] = $item;
     }
     //print_r($items);
