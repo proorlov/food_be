@@ -93,7 +93,7 @@ $app->post("/updateCities", function (ServerRequestInterface $request, ResponseI
 $app->post('/addPost', function (ServerRequestInterface $request, ResponseInterface $response) {
     global $db;
     $attrs = $request->getParsedBody();
-    if (isset($attrs['placeId']) && $attrs['userId']) {
+    if (isset($attrs['placeId']) && isset($attrs['userId'])) {
         $placeId = (int)$attrs['placeId'];
         $userId = (int)$attrs['userId'];
     } else {
