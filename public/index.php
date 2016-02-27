@@ -99,7 +99,11 @@ $app->post('/addPost', function (ServerRequestInterface $request, ResponseInterf
     } else {
         return $response->withStatus(405, "no userId or placeId");
     }
-    $description = htmlspecialchars(mysqli_real_escape_string($db, $attrs['description']));
+    if (isset($attrs['description'])) {
+        $description = htmlspecialchars(mysqli_real_escape_string($db, $attrs['description']));
+    } else {
+        $description = '';
+    }
 
 
     $sql = "INSERT INTO posts(`placeId`, `userId`, `description`, `date`) VALUES ($placeId, $userId, '$description', NOW())";
@@ -120,9 +124,9 @@ $app->post('/addPost', function (ServerRequestInterface $request, ResponseInterf
             mkdir("img/items/" . $placeId . "/" . $postId);
         }
 
-        print_r($imagine->open($file['tmp_name'])
+        $imagine->open($file['tmp_name'])
             ->resize($size)
-            ->save('img/items/' . $placeId . '/' . $postId . '/' . $file['name'], array('jpeg_quality' => 99)));
+            ->save('img/items/' . $placeId . '/' . $postId . '/' . $file['name'], array('jpeg_quality' => 99));
     }
 });
 $app->get('/getCities', function (ServerRequestInterface $request, ResponseInterface $response) {
