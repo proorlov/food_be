@@ -58,6 +58,25 @@ $app->get('/getRestaurant', function (ServerRequestInterface $request, ResponseI
     $response->getBody()->write(json_encode($items, JSON_UNESCAPED_SLASHES + JSON_UNESCAPED_UNICODE));
     return $response;
 });
+
+$app->post("/updateCities", function (ServerRequestInterface $request, ResponseInterface $response) {
+    global $db;
+    if (isset(json_decode(file_get_contents("http://catalog.api.2gis.ru/2.0/region/list?key=ruidms8871&page_size=1000&locale_filter=ru_RU"))->result->items)) {
+        $cities = json_decode(file_get_contents("http://catalog.api.2gis.ru/2.0/region/list?key=ruidms8871&page_size=1000&locale_filter=ru_RU"))->result->items;
+
+        foreach ($cities as $city) {
+            $gisId = $city->id;
+            $name = $city->name;
+            $sql = "SELECT * FROM cities WHERE gisId = $gisId AND name = '$name' ";
+            $res = mysqli_query($db, $sql)or die($sql);
+            if (mysqli_num_rows($res) == 0) {
+                $sql = "INSERT INTO cities(`gisId`, `name`) VALUES  ($gisId, '$name')";
+                mysqli_query($db, $sql) or die($sql);
+            }
+        }
+    }
+});
+
 $app->post('/addPost', function (ServerRequestInterface $request, ResponseInterface $response) {
     global $db;
     $attrs = $request->getParsedBody();
