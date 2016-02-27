@@ -92,7 +92,7 @@ $app->post("/updateCities", function (ServerRequestInterface $request, ResponseI
 
 $app->post('/addPost', function (ServerRequestInterface $request, ResponseInterface $response) {
     global $db;
-    $attrs = $request->getQueryParams();
+    $attrs = $request->getParsedBody();
     if (isset($attrs['placeId']) && isset($attrs['userId'])) {
         $placeId = (int)$attrs['placeId'];
         $userId = (int)$attrs['userId'];
@@ -104,7 +104,6 @@ $app->post('/addPost', function (ServerRequestInterface $request, ResponseInterf
     } else {
         $description = '';
     }
-
 
     $sql = "INSERT INTO posts(`placeId`, `userId`, `description`, `date`) VALUES ($placeId, $userId, '$description', NOW())";
     mysqli_query($db, $sql);
@@ -129,6 +128,7 @@ $app->post('/addPost', function (ServerRequestInterface $request, ResponseInterf
             ->save('img/items/' . $placeId . '/' . $postId . '/' . $file['name'], array('jpeg_quality' => 99));
     }
 });
+
 $app->get('/getCities', function (ServerRequestInterface $request, ResponseInterface $response) {
     global $db;
     if (isset($request->getQueryParams()['id'])) {
