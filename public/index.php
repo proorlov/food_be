@@ -40,22 +40,24 @@ $app->get('/getList', function (ServerRequestInterface $request, ResponseInterfa
 });
 $app->get('/getRestaurant', function (ServerRequestInterface $request, ResponseInterface $response) {
     global $db;
-    if (isset($request->getAttributes()['cityId'])) {
-        $cityId = $request->getAttributes()['cityId'];
+
+    if (isset($request->getQueryParams()['cityId'])) {
+        $cityId = $request->getQueryParams()['cityId'];
     } else {
         $cityId = 1;
     }
-    $sql = "SELECT * FROM places WHERE cityId = $cityId";
+    $sql = "SELECT * FROM cities WHERE id = $cityId";
     $res = mysqli_query($db, $sql);
-    $items = [];
-    while ($row = mysqli_fetch_object($res)) {
-        $item = [];
-        $item['id'] = $row->id;
-        $item['cityId'] = $row->cityId;
-        $item['name'] = $row->name;
-        $items[] = $item;
-    }
-    $response->getBody()->write(json_encode($items, JSON_UNESCAPED_SLASHES + JSON_UNESCAPED_UNICODE));
+    $row = mysqli_fetch_object($res);
+
+    $q = $request->getQueryParams()['q'];
+    $gisId = $row->gisId;
+    $json = file_get_contents("http://catalog.api.2gis.ru/2.0/catalog/branch/search?key=ruidms8871&
+    rubric_id=140857747511986,140857747439775,140857747450419,140857747440819,
+              140857747439777,140857747439778,140857747439781,140857747491075,140857747439780,140857747455407,
+              140857747439782&region_id=1&page_size=50&q=$q&sort=relevance");
+
+    $response->getBody()->write($json);
     return $response;
 });
 
@@ -68,10 +70,10 @@ $app->post("/updateCities", function (ServerRequestInterface $request, ResponseI
             $gisId = $city->id;
             $name = $city->name;
             $sql = "SELECT * FROM cities WHERE gisId = $gisId AND name = '$name' ";
-            $res = mysqli_query($db, $sql)or die($sql);
+            $res = mysqli_query($db, $sql);
             if (mysqli_num_rows($res) == 0) {
                 $sql = "INSERT INTO cities(`gisId`, `name`) VALUES  ($gisId, '$name')";
-                mysqli_query($db, $sql) or die($sql);
+                mysqli_query($db, $sql);
             }
         }
     }
