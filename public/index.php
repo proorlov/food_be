@@ -47,17 +47,26 @@ $app->get('/getRestaurant', function (ServerRequestInterface $request, ResponseI
         $cityId = 1;
     }
     $sql = "SELECT * FROM cities WHERE id = $cityId";
+
     $res = mysqli_query($db, $sql);
     $row = mysqli_fetch_object($res);
 
     $q = $request->getQueryParams()['q'];
-    $gisId = $row->gisId;
-    $json = file_get_contents("http://catalog.api.2gis.ru/2.0/catalog/branch/search?key=ruidms8871&
+    $htmlspecialchars_decode = htmlspecialchars_decode(file_get_contents("http://catalog.api.2gis.ru/2.0/catalog/branch/search?key=ruidms8871&
     rubric_id=140857747511986,140857747439775,140857747450419,140857747440819,
               140857747439777,140857747439778,140857747439781,140857747491075,140857747439780,140857747455407,
-              140857747439782&region_id=1&page_size=50&q=$q&sort=relevance");
+              140857747439782&region_id=1&page_size=5&q=$q&sort=relevance"));
 
-    $response->getBody()->write($json);
+    $json = json_decode($htmlspecialchars_decode, JSON_UNESCAPED_SLASHES + JSON_UNESCAPED_UNICODE);
+
+    $result = [];
+    foreach ($json['result']['items'] as $item) {
+        $tmp = [];
+        $tmp['id'] = $item['id'];
+        $tmp['name'] = $item['name'];
+        $result[] = $tmp;
+    }
+    $response->getBody()->write(json_encode($result, JSON_UNESCAPED_SLASHES + JSON_UNESCAPED_UNICODE));
     return $response;
 });
 
